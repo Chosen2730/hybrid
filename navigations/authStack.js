@@ -1,9 +1,8 @@
-import { Image, Text, View } from "react-native";
 import React from "react";
+import Onboarding from "../screens/AuthScreens/onboarding";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Onboarding from "./onboarding";
 
-const HomeScreen = () => {
+const AuthStack = () => {
   return (
     <SafeAreaView>
       <Onboarding />
@@ -11,4 +10,4 @@ const HomeScreen = () => {
   );
 };
 
-export default HomeScreen;
+export default AuthStack;
