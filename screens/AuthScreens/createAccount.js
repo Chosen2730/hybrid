@@ -3,8 +3,10 @@ import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TextInput } from "react-native-gesture-handler";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 
-const CreateAccount = ({ navigation }) => {
+const CreateAccount = () => {
+  const navigation = useNavigation();
   const [isPasswordSecure, setIsPasswordSecure] = useState(true);
   return (
     <SafeAreaView>
@@ -62,7 +64,12 @@ const CreateAccount = ({ navigation }) => {
         </View>
         <View className='mt-5 flex-row'>
           <Text>Already have an account? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.removeListener();
+              navigation.navigate("Login");
+            }}
+          >
             <Text className='underline'>Login</Text>
           </TouchableOpacity>
         </View>

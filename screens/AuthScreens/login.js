@@ -6,6 +6,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const Login = ({ navigation }) => {
   const [isPasswordSecure, setIsPasswordSecure] = useState(true);
+  const loginHandler = () => navigation.navigate("Home Screen");
   return (
     <SafeAreaView>
       <View className='mt-10 justify-center p-5 items-center'>
@@ -50,7 +51,10 @@ const Login = ({ navigation }) => {
           </Text>
         </View>
         <View className='items-center w-full'>
-          <TouchableOpacity className='bg-[#424874] p-4 rounded-md w-full mb-4'>
+          <TouchableOpacity
+            className='bg-[#424874] p-4 rounded-md w-full mb-4'
+            onPress={loginHandler}
+          >
             <Text className='text-white font-bold text-center'>Login</Text>
           </TouchableOpacity>
           <TouchableOpacity className='flex-row border w-full p-3 items-center justify-center rounded-md border-[#424874] space-x-2'>

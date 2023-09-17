@@ -6,10 +6,9 @@ import CreateAccount from "../screens/AuthScreens/createAccount";
 import Login from "../screens/AuthScreens/login";
 import { LogBox } from "react-native";
 LogBox.ignoreLogs(["Sending..."]);
+const Stack = createStackNavigator();
 
 const AuthStack = () => {
-  const Stack = createStackNavigator();
-
   return (
     <Stack.Navigator
       initialRouteName={"Onboard"}

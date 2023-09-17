@@ -1,9 +1,8 @@
-import { View, Text, Image, Dimensions } from "react-native";
+import { View, Text, Image, Dimensions, StyleSheet } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import Carousel from "react-native-reanimated-carousel";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const Onboarding = ({ navigation }) => {
   const [activeSlide, setActiveSlide] = useState(0);
@@ -31,19 +30,16 @@ const Onboarding = ({ navigation }) => {
   ];
 
   const nextSlide = () => {
+    if (activeSlide === splash.length - 1) {
+      navigation.navigate("Create Account");
+    }
     setActiveSlide((crr) => {
       if (crr > splash.length - 1) {
         return 0;
       } else return activeSlide + 1;
     });
-  };
-
-  useEffect(() => {
     slider.current.next({ animated: true });
-    if (activeSlide === splash.length - 1) {
-      navigation.navigate("Create Account");
-    }
-  }, [activeSlide]);
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -56,13 +52,13 @@ const Onboarding = ({ navigation }) => {
         data={splash}
         pagingEnabled
         scrollAnimationDuration={1000}
-        // onScrollEnd={() => console.log("ended")}
-        // onSnapToItem={(index) => setActiveSlide(index)}
-        renderItem={({ index, item }) => {
+        // onScrollEnd={() => }
+        onSnapToItem={(index) => setActiveSlide(index)}
+        renderItem={({ item }) => {
           return (
             <View className='p-3 flex-1'>
               <View className='items-center flex-1 justify-center'>
-                <Image source={item.img} />
+                <Image style={styles.image} className={``} source={item.img} />
                 <Text className='font-bold text-2xl text-center my-4'>
                   {item.header}
                 </Text>
@@ -82,7 +78,7 @@ const Onboarding = ({ navigation }) => {
                   <Ionicons name='ios-arrow-forward' size={18} color='black' />
                 </TouchableOpacity>
               </View>
-              <View className='flex-row justify-between items-center'>
+              <View className='py-10'>
                 <View className='flex-1 justify-center flex-row gap-2'>
                   {splash.map((item, ind) => (
                     <View
@@ -102,4 +98,14 @@ const Onboarding = ({ navigation }) => {
   );
 };
 
+const styles = StyleSheet.create({
+  container: {
+    paddingTop: 50,
+  },
+  image: {
+    width: 0.8 * Dimensions.get("window").width,
+    height: 0.8 * Dimensions.get("window").width,
+    resizeMode: "contain",
+  },
+});
 export default Onboarding;
