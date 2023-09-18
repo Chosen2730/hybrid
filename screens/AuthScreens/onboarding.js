@@ -57,18 +57,22 @@ const Onboarding = ({ navigation }) => {
         renderItem={({ item }) => {
           return (
             <View className='p-3 flex-1'>
-              <View className='items-center flex-1 justify-center'>
+              <View className='items-center flex-1 justify-center w-full'>
                 <Image style={styles.image} className={``} source={item.img} />
                 <Text className='font-bold text-2xl text-center my-4'>
                   {item.header}
                 </Text>
                 <Text className='text-center text-lg'>{item.content}</Text>
-                <TouchableOpacity
-                  className='bg-[#424874] p-3 px-20 rounded-md my-5'
-                  onPress={nextSlide}
-                >
-                  <Text className='text-white font-bold'>Next</Text>
-                </TouchableOpacity>
+                <View className='w-full my-5'>
+                  <TouchableOpacity
+                    className='bg-[#424874] p-4 px-20  rounded-md w-full'
+                    onPress={nextSlide}
+                  >
+                    <Text className='text-white text-center font-bold'>
+                      Next
+                    </Text>
+                  </TouchableOpacity>
+                </View>
 
                 <TouchableOpacity
                   className='flex-row items-center gap-1'
