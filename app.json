@@ -11,15 +11,22 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.chosen.hybrid"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.chosen.hybrid"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -31,6 +38,11 @@
           "photosPermission": "Allow hybrid to access your photos."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "2de33290-358a-43d1-9dc3-ad22b6b9557d"
+      }
+    }
   }
 }
