@@ -3,14 +3,14 @@ import React, { useEffect, useState } from "react";
 import Checkbox from "expo-checkbox";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-const SingleTask = ({ item }) => {
+const SingleTask = ({ item, navigation }) => {
   const [isSelected, setSelection] = useState(false);
   useEffect(() => {
     if (item.isComplete) setSelection(true);
   });
   return (
     <TouchableOpacity
-      // onPress={() => navigation.navigate("Category")}
+      onPress={() => navigation.navigate("View Task")}
       style={[
         {
           shadowColor: "#171717",

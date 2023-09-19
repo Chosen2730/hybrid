@@ -2,6 +2,7 @@ import { store } from "./Redux/store";
 import { Provider } from "react-redux";
 import { NavigationContainer } from "@react-navigation/native";
 import AppStack from "./navigations";
+import { AppRegistry } from "react-native";
 
 export default function App() {
   return (
@@ -12,3 +13,4 @@ export default function App() {
     </Provider>
   );
 }
+AppRegistry.registerComponent("main", () => App);

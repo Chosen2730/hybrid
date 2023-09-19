@@ -32,7 +32,9 @@ const Category = ({ navigation }) => {
       <View className='flex-1 p-5'>
         <FlatList
           data={completed}
-          renderItem={({ item }) => <SingleTask item={item} />}
+          renderItem={({ item }) => (
+            <SingleTask navigation={navigation} item={item} />
+          )}
         />
       </View>
     );
@@ -43,7 +45,9 @@ const Category = ({ navigation }) => {
       <View className='flex-1 p-5'>
         <FlatList
           data={tasks}
-          renderItem={({ item }) => <SingleTask item={item} />}
+          renderItem={({ item }) => (
+            <SingleTask navigation={navigation} item={item} />
+          )}
         />
       </View>
     );
@@ -84,7 +88,7 @@ const Category = ({ navigation }) => {
       <View className='p-5'>
         <TouchableOpacity
           className='bg-[#424874] p-4 rounded-md mb-5 items-center flex-row justify-center'
-          onPress={() => navigation.navigate("New Category")}
+          onPress={() => navigation.navigate("New Task")}
         >
           <Ionicons name='add' size={24} color='white' />
           <Text className='text-white font-bold text-center'>
