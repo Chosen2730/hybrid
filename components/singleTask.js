@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
-import Checkbox from "expo-checkbox";
+// import Checkbox from "expo-checkbox";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const SingleTask = ({ item, navigation }) => {
@@ -45,7 +45,8 @@ const SingleTask = ({ item, navigation }) => {
           )}
         </View>
       </View>
-      <Checkbox value={isSelected} onValueChange={setSelection} />
+      <Text>Check</Text>
+      {/* <Checkbox value={isSelected} onValueChange={setSelection} /> */}
     </TouchableOpacity>
   );
 };

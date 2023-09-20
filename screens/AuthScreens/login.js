@@ -6,7 +6,11 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const Login = ({ navigation }) => {
   const [isPasswordSecure, setIsPasswordSecure] = useState(true);
-  const loginHandler = () => navigation.navigate("Home Screen");
+  const [userDetails, setUserDetails] = useState(null);
+  const loginHandler = () => {
+    navigation.navigate("Home Screen");
+  };
+
   return (
     <SafeAreaView>
       <View className='mt-10 justify-center p-5 items-center'>
@@ -20,12 +24,18 @@ const Login = ({ navigation }) => {
             className='bg-gray-200 p-4 rounded-md text-gray-900'
             placeholder='Email Address'
             keyboardType='email-address'
+            onChangeText={(val) =>
+              setUserDetails({ ...userDetails, email: val })
+            }
           />
           <View>
             <TextInput
               className='bg-gray-200 p-4 rounded-md text-gray-900 relative'
               placeholder='Password'
               secureTextEntry={isPasswordSecure}
+              onChangeText={(val) =>
+                setUserDetails({ ...userDetails, password: val })
+              }
             />
             <TouchableOpacity
               onPress={() => setIsPasswordSecure(!isPasswordSecure)}

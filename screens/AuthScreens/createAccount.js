@@ -8,6 +8,13 @@ import { useNavigation } from "@react-navigation/native";
 const CreateAccount = () => {
   const navigation = useNavigation();
   const [isPasswordSecure, setIsPasswordSecure] = useState(true);
+  const [userDetails, setUserDetails] = useState(null);
+
+  const signUpHandler = () => {
+    console.log(userDetails);
+    navigation.navigate("Login");
+  };
+
   return (
     <SafeAreaView>
       <View className='mt-10 p-5 items-center'>
@@ -21,17 +28,26 @@ const CreateAccount = () => {
             className='bg-gray-200 p-4 rounded-md text-gray-900'
             placeholder='Username'
             keyboardType='name-phone-pad'
+            onChangeText={(val) =>
+              setUserDetails({ ...userDetails, userName: val })
+            }
           />
           <TextInput
             className='bg-gray-200 p-4 rounded-md text-gray-900'
             placeholder='Email Address'
             keyboardType='email-address'
+            onChangeText={(val) =>
+              setUserDetails({ ...userDetails, email: val })
+            }
           />
           <View>
             <TextInput
               className='bg-gray-200 p-4 rounded-md text-gray-900 relative'
               placeholder='Password'
               secureTextEntry={isPasswordSecure}
+              onChangeText={(val) =>
+                setUserDetails({ ...userDetails, password: val })
+              }
             />
             <TouchableOpacity
               onPress={() => setIsPasswordSecure(!isPasswordSecure)}
@@ -54,7 +70,10 @@ const CreateAccount = () => {
           </View>
         </View>
         <View className='items-center w-full'>
-          <TouchableOpacity className='bg-[#424874] p-4 rounded-md w-full mb-4'>
+          <TouchableOpacity
+            onPress={signUpHandler}
+            className='bg-[#424874] p-4 rounded-md w-full mb-4'
+          >
             <Text className='text-white font-bold text-center'>Sign Up</Text>
           </TouchableOpacity>
           <TouchableOpacity className='flex-row border w-full p-3 items-center justify-center rounded-md border-[#424874] space-x-2'>

@@ -10,7 +10,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView, TextInput } from "react-native-gesture-handler";
 import SelectDropdown from "react-native-select-dropdown";
-import { DateTimePick } from "../../utils/datePickAndroind";
+// import { DateTimePick } from "../../utils/datePickAndroind";
 
 const NewTask = ({ navigation }) => {
   const allCategories = ["General", "Trip", "Sport"];
@@ -54,11 +54,11 @@ const NewTask = ({ navigation }) => {
             </View>
             <View className='justify-between flex-row items-center my-4'>
               <Text>Select Date</Text>
-              <DateTimePick mode='date' />
+              {/* <DateTimePick mode='date' /> */}
             </View>
             <View className='justify-between flex-row items-center'>
               <Text>Select Time</Text>
-              <DateTimePick mode='time' />
+              {/* <DateTimePick mode='time' /> */}
             </View>
           </View>
           <Text className='my-5'>Optional Description</Text>

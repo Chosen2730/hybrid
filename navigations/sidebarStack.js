@@ -1,5 +1,4 @@
 import React from "react";
-import "react-native-gesture-handler";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import HomeScreen from "../screens/HomeScreens/homeScreen";
 import Profile from "../screens/SidebarScreens/profile";
@@ -14,7 +13,6 @@ import { Feather } from "@expo/vector-icons";
 
 const SidebarStack = () => {
   const Drawer = createDrawerNavigator();
-  const icons = ["home", "user", "question", "info", "staro"];
   return (
     <Drawer.Navigator
       screenOptions={{

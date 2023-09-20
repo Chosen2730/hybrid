@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
-import CircularProgress from "react-native-circular-progress-indicator";
+// import CircularProgress from "react-native-circular-progress-indicator";
 import { Ionicons } from "@expo/vector-icons";
 
 const HomeScreen = ({ navigation }) => {
@@ -40,7 +40,7 @@ const HomeScreen = ({ navigation }) => {
                 {item.completed}/{item.tasks} tasks
               </Text>
             </View>
-            <CircularProgress
+            {/* <CircularProgress
               value={(Number(item.completed) / Number(item.tasks)) * 100}
               inActiveStrokeColor={"gray"}
               inActiveStrokeOpacity={0.2}
@@ -48,7 +48,8 @@ const HomeScreen = ({ navigation }) => {
               activeStrokeColor={item.color}
               radius={40}
               valueSuffix={"%"}
-            />
+            /> */}
+            <Text>Circular bar</Text>
           </TouchableOpacity>
         )}
       />
