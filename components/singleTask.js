@@ -1,13 +1,11 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
-// import Checkbox from "expo-checkbox";
+import Checkbox from "expo-checkbox";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const SingleTask = ({ item, navigation }) => {
   const [isSelected, setSelection] = useState(false);
-  useEffect(() => {
-    if (item.isComplete) setSelection(true);
-  });
+
   return (
     <TouchableOpacity
       onPress={() => navigation.navigate("View Task")}
@@ -34,19 +32,19 @@ const SingleTask = ({ item, navigation }) => {
           <Text className='bg-[#A6B1E1] text-gray-100 rounded-md p-2 px-4'>
             {item.time}
           </Text>
-          {item.isComplete && (
-            <TouchableOpacity className='bg-red-100 p-1 rounded-full'>
-              <MaterialCommunityIcons
-                name='delete-outline'
-                size={24}
-                color='rgb(153 27 27)'
-              />
-            </TouchableOpacity>
-          )}
         </View>
       </View>
-      <Text>Check</Text>
-      {/* <Checkbox value={isSelected} onValueChange={setSelection} /> */}
+      {!item.isComplete ? (
+        <Checkbox value={isSelected} onValueChange={setSelection} />
+      ) : (
+        <TouchableOpacity className='bg-red-100 p-1 rounded-full'>
+          <MaterialCommunityIcons
+            name='delete-outline'
+            size={24}
+            color='rgb(153 27 27)'
+          />
+        </TouchableOpacity>
+      )}
     </TouchableOpacity>
   );
 };
