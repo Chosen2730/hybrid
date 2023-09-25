@@ -46,6 +46,7 @@ const CreateAccount = () => {
           [{ text: "Ok", onPress: () => navigation.navigate("Login") }],
           { cancelable: false }
         );
+        setUserDetails({});
       } catch (error) {
         Alert.alert("Ooops!", error.response.data.msg);
         setIsLoading(false);
@@ -73,6 +74,7 @@ const CreateAccount = () => {
                 className='bg-gray-200 p-4 rounded-md text-gray-900'
                 placeholder='Full Name'
                 keyboardType='name-phone-pad'
+                value={userDetails?.fullName || ""}
                 onChangeText={(val) =>
                   setUserDetails({ ...userDetails, fullName: val })
                 }
@@ -81,6 +83,7 @@ const CreateAccount = () => {
                 className='bg-gray-200 p-4 rounded-md text-gray-900'
                 placeholder='Email Address'
                 keyboardType='email-address'
+                value={userDetails?.email || ""}
                 onChangeText={(val) =>
                   setUserDetails({ ...userDetails, email: val })
                 }
@@ -89,6 +92,7 @@ const CreateAccount = () => {
                 className='bg-gray-200 p-4 rounded-md text-gray-900'
                 placeholder='Phone Number'
                 keyboardType='phone-pad'
+                value={userDetails?.tel || ""}
                 onChangeText={(val) =>
                   setUserDetails({ ...userDetails, tel: val })
                 }
@@ -98,6 +102,7 @@ const CreateAccount = () => {
                   className='bg-gray-200 p-4 rounded-md text-gray-900 relative'
                   placeholder='Password'
                   secureTextEntry={isPasswordSecure}
+                  value={userDetails?.password || ""}
                   onChangeText={(val) =>
                     setUserDetails({ ...userDetails, password: val })
                   }
@@ -126,6 +131,7 @@ const CreateAccount = () => {
                   className='bg-gray-200 p-4 rounded-md text-gray-900 relative'
                   placeholder='Confirm Password'
                   secureTextEntry={isPasswordSecure}
+                  value={userDetails?.confirmPassword || ""}
                   onChangeText={(val) =>
                     setUserDetails({ ...userDetails, confirmPassword: val })
                   }

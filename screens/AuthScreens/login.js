@@ -25,7 +25,7 @@ const Login = ({ navigation }) => {
     const getToken = async () => {
       try {
         const value = await AsyncStorage.getItem("token");
-        // console.log({ value });
+
         if (value !== null) {
           navigation.navigate("Home Screen");
         }
@@ -33,8 +33,9 @@ const Login = ({ navigation }) => {
         console.log(e);
       }
     };
+
     getToken();
-  });
+  }, []);
 
   const loginHandler = async () => {
     const url = `${baseURL}/user/login`;
@@ -48,8 +49,11 @@ const Login = ({ navigation }) => {
       try {
         const res = await axios.post(url, userDetails);
         await AsyncStorage.setItem("token", res.data.token);
+        const jsonValue = JSON.stringify(res.data.user);
+        await AsyncStorage.setItem("user", jsonValue);
         navigation.navigate("Home Screen");
         setIsLoading(false);
+        setUserDetails({});
       } catch (error) {
         Alert.alert("Ooops!", error.response.data.msg);
         setIsLoading(false);
@@ -76,6 +80,7 @@ const Login = ({ navigation }) => {
                 className='bg-gray-200 p-4 rounded-md text-gray-900'
                 placeholder='Email Address'
                 keyboardType='email-address'
+                value={userDetails?.email || ""}
                 onChangeText={(val) =>
                   setUserDetails({ ...userDetails, email: val })
                 }
@@ -84,6 +89,7 @@ const Login = ({ navigation }) => {
                 <TextInput
                   className='bg-gray-200 p-4 rounded-md text-gray-900 relative'
                   placeholder='Password'
+                  value={userDetails?.password || ""}
                   secureTextEntry={isPasswordSecure}
                   onChangeText={(val) =>
                     setUserDetails({ ...userDetails, password: val })

@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  Image,
 } from "react-native";
 
 import { FlatList, Swipeable } from "react-native-gesture-handler";
@@ -14,11 +15,12 @@ import { baseURL, config } from "../../utils/constants";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
+import { useGlobalContext } from "../../context";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  const [isLoading, setIsLoading] = useState(false);
-  const [categories, setCategories] = useState([]);
+  const { getCategories, isLoading, setIsLoading, categories } =
+    useGlobalContext();
 
   const renderRightActions = (item) => {
     return (
@@ -44,29 +46,9 @@ const HomeScreen = () => {
     }
   };
 
-  const getCategories = async () => {
-    const url = `${baseURL}/category`;
-    setIsLoading(true);
-    try {
-      const res = await axios.get(url, await config());
-      setIsLoading(false);
-      setCategories(res.data);
-    } catch (error) {
-      console.error(error);
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
     getCategories();
-  }, [navigation]);
-
-  useEffect(() => {
-    const getCat = navigation.addListener("focus", () => {
-      getCategories();
-    });
-    return getCat;
-  }, [navigation]);
+  }, []);
 
   return (
     <View className='px-4 flex-1 pt-8 bg-white'>
@@ -74,7 +56,7 @@ const HomeScreen = () => {
         <ActivityIndicator className='flex-1' />
       ) : categories.length < 1 ? (
         <View className='flex-1 items-center justify-center'>
-          <Text className='text-xl font-medium'>No Categories Created</Text>
+          <Image source={require("../../assets/images/category.jpeg")} />
         </View>
       ) : (
         <FlatList

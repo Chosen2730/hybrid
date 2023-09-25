@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const baseURL = "https://hybrid-backend.vercel.app/api/v1";
-// export const baseURL = "http://localhost:3000/api/v1";
+// export const baseURL = "https://hybrid-backend.vercel.app/api/v1";
+export const baseURL = "http://localhost:3000/api/v1";
 
 const getToken = async () => {
   try {

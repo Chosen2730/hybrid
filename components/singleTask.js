@@ -11,9 +11,11 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import dateFormat, { masks } from "dateformat";
 import axios from "axios";
 import { baseURL, config } from "../utils/constants";
+import { useGlobalContext } from "../context";
 
-const SingleTask = ({ item, navigation, getCategory, data }) => {
-  const [isLoading, setIsLoading] = useState(false);
+const SingleTask = ({ item, navigation }) => {
+  const { isLoading, setIsLoading, getCategory, getCategories, completeTask } =
+    useGlobalContext();
   const [isSelected, setSelection] = useState(false);
   const today = dateFormat(item.date, "mmmm dS, yyyy");
   const time = dateFormat(item.time, "UTC:h:MM TT");
@@ -33,7 +35,7 @@ const SingleTask = ({ item, navigation, getCategory, data }) => {
         {
           text: "Yes",
           onPress: () => {
-            completeTask();
+            completeTask(item);
           },
         },
       ],
@@ -42,26 +44,14 @@ const SingleTask = ({ item, navigation, getCategory, data }) => {
     );
   };
 
-  const completeTask = async () => {
-    const url = `${baseURL}/task/${item?._id}`;
-    setIsLoading(true);
-    try {
-      const res = await axios.patch(url, { isCompleted: true }, await config());
-      setIsLoading(false);
-      getCategory();
-    } catch (error) {
-      console.error(error);
-      setIsLoading(false);
-    }
-  };
-
   const deleteTask = async () => {
     const url = `${baseURL}/task/${item?._id}`;
     setIsLoading(true);
     try {
       const res = await axios.delete(url, await config());
       setIsLoading(false);
-      getCategory();
+      getCategory(item?.categoryID);
+      getCategories();
     } catch (error) {
       console.error(error);
       setIsLoading(false);
@@ -73,7 +63,7 @@ const SingleTask = ({ item, navigation, getCategory, data }) => {
   }
   return (
     <TouchableOpacity
-      onPress={() => navigation.navigate("View Task")}
+      onPress={() => navigation.navigate("View Task", { item })}
       style={[
         {
           shadowColor: "#171717",

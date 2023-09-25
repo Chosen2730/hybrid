@@ -6,6 +6,7 @@ import "react-native-gesture-handler";
 import { AppRegistry } from "react-native";
 import { name as appName } from "./app.json";
 import { useEffect } from "react";
+import { AppProvider } from "./context";
 
 export default function App() {
   const MyTheme = {
@@ -18,9 +19,11 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <NavigationContainer theme={MyTheme}>
-        <AppStack />
-      </NavigationContainer>
+      <AppProvider>
+        <NavigationContainer theme={MyTheme}>
+          <AppStack />
+        </NavigationContainer>
+      </AppProvider>
     </Provider>
   );
 }

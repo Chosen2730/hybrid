@@ -7,51 +7,65 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView, TextInput } from "react-native-gesture-handler";
-import SelectDropdown from "react-native-select-dropdown";
+// import SelectDropdown from "react-native-select-dropdown";
 import { DateTimePick } from "../../utils/datePickAndroid";
 import { DateTimePickIOS } from "../../utils/datePickerIOS";
 import { baseURL, config } from "../../utils/constants";
 import axios from "axios";
 import { useGlobalContext } from "../../context";
+import { useNavigation } from "@react-navigation/native";
 
-const NewTask = ({ route, navigation }) => {
-  const { isLoading, setIsLoading, getCategory, getCategories } =
-    useGlobalContext();
+const EditTask = ({ route }) => {
+  const navigation = useNavigation();
+  const { isLoading, setIsLoading } = useGlobalContext();
   const [taskInputs, setTaskInputs] = useState({});
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
 
-  const { category } = route.params;
+  const { item: category } = route.params || {};
   const keyboardVerticalOffset = Platform.OS === "ios" ? 20 : 0;
 
-  const createTask = async () => {
-    const url = `${baseURL}/task`;
-    const { title, description } = taskInputs || {};
+  useEffect(() => {
+    setTaskInputs({
+      ...taskInputs,
+      description: category?.description,
+      title: category?.title,
+    });
+    setDate(new Date(category?.date));
+    setTime(new Date(category?.time));
+  }, []);
+
+  console.log(category);
+
+  const updateTask = async () => {
+    const url = `${baseURL}/task/${category?._id}`;
+    const { title } = taskInputs || {};
     if (!title || title?.length < 1) {
       Alert.alert("Title field is required");
     } else {
       setIsLoading(true);
       try {
-        await axios.post(
+        const res = await axios.patch(
           url,
-          { title, description, date, time, categoryID: category?._id },
+          { ...taskInputs, date, time },
           await config()
         );
         setIsLoading(false);
         Alert.alert(
           "Success!",
-          "New Task created successfully",
+          "Task Updated Successfully",
           [
             {
               text: "Ok",
-              onPress: async () => {
-                await getCategory(category?._id);
-                getCategories();
-                navigation.goBack();
+              onPress: () => {
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: "Home Screen" }],
+                });
               },
             },
           ],
@@ -79,21 +93,15 @@ const NewTask = ({ route, navigation }) => {
             >
               <Ionicons name='arrow-back' size={20} color='white' />
             </TouchableOpacity>
-            <Text className='text-2xl font-bold'>New Task</Text>
+            <Text className='text-2xl font-bold'>Edit Task</Text>
           </View>
           <TextInput
             className='bg-gray-200 p-4 rounded-md text-gray-900 my-10'
             placeholder='Write a new task'
-            val={taskInputs?.title || ""}
+            value={taskInputs?.title || ""}
             onChangeText={(val) => setTaskInputs({ ...taskInputs, title: val })}
           />
           <View className='bg-gray-200 p-4'>
-            <View className='justify-between flex-row items-center'>
-              <Text>Category</Text>
-              <Text className='bg-gray-100 p-3 rounded-md w-[100px]'>
-                {category?.title}
-              </Text>
-            </View>
             <View className='justify-between flex-row items-center my-4'>
               <Text>Select Date</Text>
               {Platform.OS === "android" ? (
@@ -117,7 +125,7 @@ const NewTask = ({ route, navigation }) => {
             numberOfLines={10}
             placeholder='write a note'
             className='bg-gray-200 h-32 rounded-md p-4'
-            val={taskInputs?.description || ""}
+            value={taskInputs?.description || ""}
             onChangeText={(val) =>
               setTaskInputs({ ...taskInputs, description: val })
             }
@@ -126,13 +134,13 @@ const NewTask = ({ route, navigation }) => {
 
         <TouchableOpacity
           className='bg-[#424874] p-4 rounded-md my-5 items-center flex-row justify-center'
-          onPress={createTask}
+          onPress={updateTask}
           disabled={isLoading}
         >
           {isLoading ? (
             <ActivityIndicator />
           ) : (
-            <Text className='text-white font-bold text-center'>Add Task</Text>
+            <Text className='text-white font-bold text-center'>Submit</Text>
           )}
         </TouchableOpacity>
       </KeyboardAvoidingView>
@@ -140,19 +148,4 @@ const NewTask = ({ route, navigation }) => {
   );
 };
 
-export default NewTask;
-{
-  /* <SelectDropdown
-                data={allCategories}
-                buttonStyle={{ borderRadius: 10, width: 100 }}
-                onSelect={(selectedItem, index) => {
-                  // console.log(selectedItem, index);
-                }}
-                buttonTextAfterSelection={(selectedItem, index) => {
-                  return selectedItem;
-                }}
-                rowTextForSelection={(item, index) => {
-                  return item;
-                }}
-              /> */
-}
+export default EditTask;

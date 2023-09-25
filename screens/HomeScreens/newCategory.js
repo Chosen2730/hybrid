@@ -12,9 +12,11 @@ import { FlatList, TextInput } from "react-native-gesture-handler";
 import { baseURL, config } from "../../utils/constants";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
+import { useGlobalContext } from "../../context";
 
 const NewCategory = () => {
   const navigation = useNavigation();
+  const { getCategories } = useGlobalContext();
   const [colorsLoading, setColorsLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [colors, setColors] = useState([]);
@@ -38,8 +40,6 @@ const NewCategory = () => {
     getColors();
   }, []);
 
-  console.log(selectedIndex);
-
   const createCategory = async () => {
     const url = `${baseURL}/category`;
     if (title.length < 1) {
@@ -59,7 +59,8 @@ const NewCategory = () => {
           [
             {
               text: "Ok",
-              onPress: () => {
+              onPress: async () => {
+                await getCategories();
                 navigation.goBack();
               },
             },

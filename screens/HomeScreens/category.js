@@ -1,61 +1,45 @@
-import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ActivityIndicator,
+  Image,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import ProgressBar from "react-native-progress-bar-horizontal";
 import { FlatList } from "react-native-gesture-handler";
 import SingleTask from "../../components/singleTask";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { baseURL, config } from "../../utils/constants";
-import axios from "axios";
+import { useGlobalContext } from "../../context";
 
 const Category = ({ route, navigation }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [category, setCategory] = useState({});
-  const { item } = route.params;
+  const Tab = createMaterialTopTabNavigator();
+  const { getCategory, isLoading, category, completedTasks, unCompletedTasks } =
+    useGlobalContext();
 
+  const [progress, setProgress] = useState(0);
+  const { item } = route.params;
   const id = item._id;
 
-  const getCategory = async () => {
-    const url = `${baseURL}/category/${id}`;
-    setIsLoading(true);
-    try {
-      const res = await axios.get(url, await config());
-      setIsLoading(false);
-      setCategory(res.data);
-    } catch (error) {
-      console.error(error);
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
-    getCategory();
+    getCategory(id);
   }, []);
 
   useEffect(() => {
-    const getCat = navigation.addListener("focus", () => {
-      getCategory();
-    });
-    return getCat;
-  }, [navigation]);
-
-  const completedTasks = category?.tasks?.filter(
-    (task) => task.isCompleted === true
-  );
-  const unCompletedTasks = category?.tasks?.filter(
-    (task) => task.isCompleted !== true
-  );
-
-  const Tab = createMaterialTopTabNavigator();
+    if (category.tasks?.length > 0) {
+      const p =
+        Number(completedTasks?.length) / Number(category?.tasks?.length);
+      setProgress(p);
+    }
+  }, [category]);
 
   const CompletedTask = () => {
     return (
       <View className='flex-1 p-5'>
         {completedTasks?.length < 1 ? (
           <View className='items-center justify-center flex-1'>
-            <Text className='text-lg text-medium text-center '>
-              You have not completed any task
-            </Text>
+            <Image source={require("../../assets/images/notask2.png")} />
           </View>
         ) : (
           <FlatList
@@ -76,21 +60,18 @@ const Category = ({ route, navigation }) => {
   const NewTask = () => {
     return (
       <View className='flex-1 p-5'>
-        {category?.tasks?.length < 1 ? (
+        {unCompletedTasks?.length < 1 ? (
           <View className='items-center justify-center flex-1'>
-            <Text className='text-lg text-medium text-center '>
-              You have not created a task for this category
-            </Text>
+            <Image source={require("../../assets/images/notask.png")} />
+            {/* <Text className='text-base text-medium text-center '>
+              You do not have any uncompleted task
+            </Text> */}
           </View>
         ) : (
           <FlatList
             data={unCompletedTasks}
             renderItem={({ item }) => (
-              <SingleTask
-                getCategory={getCategory}
-                navigation={navigation}
-                item={item}
-              />
+              <SingleTask navigation={navigation} item={item} />
             )}
           />
         )}
@@ -129,7 +110,7 @@ const Category = ({ route, navigation }) => {
           </Text>
         </View>
         <ProgressBar
-          progress={0.5}
+          progress={progress}
           borderWidth={1}
           fillColor={category?.color}
           unfilledColor='gray'

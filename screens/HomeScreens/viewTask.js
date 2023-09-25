@@ -1,9 +1,16 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import dateFormat from "dateformat";
+import { useGlobalContext } from "../../context";
 
-const ViewTask = ({ navigation }) => {
+const ViewTask = ({ route, navigation }) => {
+  const { completeTask, isLoading } = useGlobalContext();
+  const { item } = route.params || {};
+  const today = dateFormat(item.date, "mmmm dS, yyyy");
+  const time = dateFormat(item.time, "UTC:h:MM TT");
+
   return (
     <SafeAreaView className='p-4 flex-1'>
       <View className='flex-row items-center gap-3'>
@@ -19,25 +26,21 @@ const ViewTask = ({ navigation }) => {
       <View className='flex-1 my-5'>
         <View>
           <Text className='text-lg font-bold'>Task</Text>
-          <Text className=''>Design a website</Text>
+          <Text className=''>{item?.title}</Text>
         </View>
         <View className='my-5'>
           <Text className='text-lg font-bold mb-1'>Details</Text>
-          <Text>Category: General</Text>
-          <Text className='my-1'>Date: 27th May</Text>
-          <Text>Time: 2pm</Text>
+
+          <Text className='my-1'>Date: {today}</Text>
+          <Text>Time: {time}</Text>
         </View>
         <View className=''>
           <Text className='text-lg font-bold mb-1'>Description</Text>
-          <Text className=''>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quia
-            repudiandae veritatis, quibusdam voluptas doloremque tenetur quaerat
-            dicta accusamus ipsam qui.
-          </Text>
+          <Text className=''>{item?.description}</Text>
         </View>
         <TouchableOpacity
           className='my-5'
-          onPress={() => navigation.navigate("New Task")}
+          onPress={() => navigation.navigate("Edit Task", { item })}
         >
           <Text className='text-center text-blue-500'>Edit Task</Text>
         </TouchableOpacity>
@@ -45,11 +48,19 @@ const ViewTask = ({ navigation }) => {
 
       <TouchableOpacity
         className='bg-[#424874] p-4 rounded-md my-5 items-center flex-row justify-center'
-        onPress={() => navigation.navigate("Categories")}
+        onPress={async () => {
+          await completeTask(item);
+          navigation.navigate("Categories");
+        }}
+        disabled={isLoading}
       >
-        <Text className='text-white font-bold text-center'>
-          Mark as Completed
-        </Text>
+        {isLoading ? (
+          <ActivityIndicator />
+        ) : (
+          <Text className='text-white font-bold text-center'>
+            Mark as Completed
+          </Text>
+        )}
       </TouchableOpacity>
     </SafeAreaView>
   );
