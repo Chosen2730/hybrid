@@ -4,18 +4,63 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView, TextInput } from "react-native-gesture-handler";
 import SelectDropdown from "react-native-select-dropdown";
 import { DateTimePick } from "../../utils/datePickAndroid";
 import { DateTimePickIOS } from "../../utils/datePickerIOS";
+import { baseURL, config } from "../../utils/constants";
+import axios from "axios";
 
-const NewTask = ({ navigation }) => {
-  const allCategories = ["General", "Trip", "Sport"];
+const NewTask = ({ route, navigation }) => {
+  const [taskInputs, setTaskInputs] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [date, setDate] = useState(new Date());
+  const [time, setTime] = useState(new Date());
+
+  const { category } = route.params;
   const keyboardVerticalOffset = Platform.OS === "ios" ? 20 : 0;
+
+  const createTask = async () => {
+    const url = `${baseURL}/task`;
+    const { title, description } = taskInputs || {};
+    if (!title || title?.length < 1) {
+      Alert.alert("Title field is required");
+    } else {
+      setIsLoading(true);
+      try {
+        await axios.post(
+          url,
+          { title, description, date, time, categoryID: category?._id },
+          await config()
+        );
+        setIsLoading(false);
+        Alert.alert(
+          "Success!",
+          "New Task created successfully",
+          [
+            {
+              text: "Ok",
+              onPress: () => {
+                navigation.goBack();
+              },
+            },
+          ],
+          { cancelable: false }
+        );
+      } catch (error) {
+        console.error(error);
+        setIsLoading(false);
+        Alert.alert("Ooops!", error.response.data.msg || "an error occurred");
+      }
+    }
+  };
+
   return (
     <SafeAreaView className='p-4 flex-1'>
       <KeyboardAvoidingView
@@ -35,11 +80,65 @@ const NewTask = ({ navigation }) => {
           <TextInput
             className='bg-gray-200 p-4 rounded-md text-gray-900 my-10'
             placeholder='Write a new task'
+            val={taskInputs?.title || ""}
+            onChangeText={(val) => setTaskInputs({ ...taskInputs, title: val })}
           />
           <View className='bg-gray-200 p-4'>
             <View className='justify-between flex-row items-center'>
               <Text>Category</Text>
-              <SelectDropdown
+              <Text className='bg-gray-100 p-3 rounded-md w-[100px]'>
+                {category?.title}
+              </Text>
+            </View>
+            <View className='justify-between flex-row items-center my-4'>
+              <Text>Select Date</Text>
+              {Platform.OS === "android" ? (
+                <DateTimePick date={date} setDate={setDate} mode='date' />
+              ) : (
+                <DateTimePickIOS date={date} setDate={setDate} mode='date' />
+              )}
+            </View>
+            <View className='justify-between flex-row items-center'>
+              <Text>Select Time</Text>
+              {Platform.OS === "android" ? (
+                <DateTimePick date={time} setDate={setTime} mode='time' />
+              ) : (
+                <DateTimePickIOS date={time} setDate={setTime} mode='time' />
+              )}
+            </View>
+          </View>
+          <Text className='my-5'>Optional Description</Text>
+          <TextInput
+            multiline={true}
+            numberOfLines={10}
+            placeholder='write a note'
+            className='bg-gray-200 h-32 rounded-md p-4'
+            val={taskInputs?.description || ""}
+            onChangeText={(val) =>
+              setTaskInputs({ ...taskInputs, description: val })
+            }
+          />
+        </View>
+
+        <TouchableOpacity
+          className='bg-[#424874] p-4 rounded-md my-5 items-center flex-row justify-center'
+          onPress={createTask}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <ActivityIndicator />
+          ) : (
+            <Text className='text-white font-bold text-center'>Add Task</Text>
+          )}
+        </TouchableOpacity>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+};
+
+export default NewTask;
+{
+  /* <SelectDropdown
                 data={allCategories}
                 buttonStyle={{ borderRadius: 10, width: 100 }}
                 onSelect={(selectedItem, index) => {
@@ -51,43 +150,5 @@ const NewTask = ({ navigation }) => {
                 rowTextForSelection={(item, index) => {
                   return item;
                 }}
-              />
-            </View>
-            <View className='justify-between flex-row items-center my-4'>
-              <Text>Select Date</Text>
-              {Platform.OS === "android" ? (
-                <DateTimePick mode='date' />
-              ) : (
-                <DateTimePickIOS mode='date' />
-              )}
-            </View>
-            <View className='justify-between flex-row items-center'>
-              <Text>Select Time</Text>
-              {Platform.OS === "android" ? (
-                <DateTimePick mode='time' />
-              ) : (
-                <DateTimePickIOS mode='time' />
-              )}
-            </View>
-          </View>
-          <Text className='my-5'>Optional Description</Text>
-          <TextInput
-            multiline={true}
-            numberOfLines={10}
-            placeholder='write a note'
-            className='bg-gray-200 h-32 rounded-md p-4'
-          />
-        </View>
-
-        <TouchableOpacity
-          className='bg-[#424874] p-4 rounded-md my-5 items-center flex-row justify-center'
-          onPress={() => navigation.navigate("Category")}
-        >
-          <Text className='text-white font-bold text-center'>Add Task</Text>
-        </TouchableOpacity>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
-  );
-};
-
-export default NewTask;
+              /> */
+}

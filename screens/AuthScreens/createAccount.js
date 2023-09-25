@@ -19,28 +19,37 @@ import axios from "axios";
 const CreateAccount = () => {
   const navigation = useNavigation();
   const [isPasswordSecure, setIsPasswordSecure] = useState(true);
-  const [userDetails, setUserDetails] = useState(null);
+  const [userDetails, setUserDetails] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
   const signUpHandler = async () => {
-    setIsLoading(true);
     const url = `${baseURL}/user/signup`;
-    // const {fullName, email, password, confirmPassword, tel} = userDetails
-    // let err = "";
-    // if(!fullName || !email || !password || )
-    try {
-      const res = await axios.post(url, userDetails);
-      console.log(res);
-      setIsLoading(false);
-      Alert.alert(
-        "Success!!",
-        "Your account has been successfully created, Login to Continue",
-        [{ text: "Ok", onPress: () => navigation.navigate("Login") }],
-        { cancelable: false }
-      );
-    } catch (error) {
-      Alert.alert(error.response.data.msg);
-      setIsLoading(false);
+    const { email, password, fullName, tel, confirmPassword } = userDetails;
+    if (!fullName || fullName.length < 1) {
+      Alert.alert("Error!", "Fullname field is required");
+    } else if (!email || email.length < 1) {
+      Alert.alert("Error!", "email field is required");
+    } else if (!tel || tel.length < 1) {
+      Alert.alert("Error!", "Phone number field is required");
+    } else if (!password || password.length < 1) {
+      Alert.alert("Error!", "Password field is required");
+    } else if (!confirmPassword || confirmPassword.length < 1) {
+      Alert.alert("Error!", "Confirm password field is required");
+    } else {
+      setIsLoading(true);
+      try {
+        const res = await axios.post(url, userDetails);
+        setIsLoading(false);
+        Alert.alert(
+          "Success!!",
+          "Your account has been successfully created, Login to Continue",
+          [{ text: "Ok", onPress: () => navigation.navigate("Login") }],
+          { cancelable: false }
+        );
+      } catch (error) {
+        Alert.alert("Ooops!", error.response.data.msg);
+        setIsLoading(false);
+      }
     }
   };
 

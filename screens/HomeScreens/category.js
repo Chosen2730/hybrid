@@ -1,41 +1,74 @@
-import { View, Text, TouchableOpacity } from "react-native";
-import React from "react";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import React, { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import ProgressBar from "react-native-progress-bar-horizontal";
 import { FlatList } from "react-native-gesture-handler";
 import SingleTask from "../../components/singleTask";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { baseURL, config } from "../../utils/constants";
+import axios from "axios";
 
-const Category = ({ navigation }) => {
+const Category = ({ route, navigation }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [category, setCategory] = useState({});
+  const { item } = route.params;
+
+  const id = item._id;
+
+  const getCategory = async () => {
+    const url = `${baseURL}/category/${id}`;
+    setIsLoading(true);
+    try {
+      const res = await axios.get(url, await config());
+      setIsLoading(false);
+      setCategory(res.data);
+    } catch (error) {
+      console.error(error);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getCategory();
+  }, []);
+
+  useEffect(() => {
+    const getCat = navigation.addListener("focus", () => {
+      getCategory();
+    });
+    return getCat;
+  }, [navigation]);
+
+  const completedTasks = category?.tasks?.filter(
+    (task) => task.isCompleted === true
+  );
+  const unCompletedTasks = category?.tasks?.filter(
+    (task) => task.isCompleted !== true
+  );
+
   const Tab = createMaterialTopTabNavigator();
-  const tasks = [
-    { title: "Design a Website", time: "2.00pm", date: "27th May" },
-    { title: "Walk the dog", time: "5:30pm", date: "23rd May" },
-    { title: "Meet with Jelite", time: "2.00pm", date: "27th May" },
-    { title: "Design a Website", time: "2.00pm", date: "27th May" },
-    { title: "Walk the dog", time: "5:30pm", date: "23rd May" },
-    { title: "Meet with Jelite", time: "2.00pm", date: "27th May" },
-    { title: "Design a Website", time: "2.00pm", date: "27th May" },
-    { title: "Walk the dog", time: "5:30pm", date: "23rd May" },
-    { title: "Meet with Jelite", time: "2.00pm", date: "27th May" },
-    { title: "Design a Website", time: "2.00pm", date: "27th May" },
-    { title: "Walk the dog", time: "5:30pm", date: "23rd May" },
-    { title: "Meet with Jelite", time: "2.00pm", date: "27th May" },
-  ];
-  const completed = [
-    { title: "Brush my teeth", time: "2.00pm", isComplete: true },
-    { title: "Train for Kungfu", time: "5:30pm", isComplete: true },
-    { title: "Call LOML", time: "2.00pm", isComplete: true },
-  ];
+
   const CompletedTask = () => {
     return (
       <View className='flex-1 p-5'>
-        <FlatList
-          data={completed}
-          renderItem={({ item }) => (
-            <SingleTask navigation={navigation} item={item} />
-          )}
-        />
+        {completedTasks?.length < 1 ? (
+          <View className='items-center justify-center flex-1'>
+            <Text className='text-lg text-medium text-center '>
+              You have not completed any task
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            data={completedTasks}
+            renderItem={({ item }) => (
+              <SingleTask
+                getCategory={getCategory}
+                navigation={navigation}
+                item={item}
+              />
+            )}
+          />
+        )}
       </View>
     );
   };
@@ -43,15 +76,36 @@ const Category = ({ navigation }) => {
   const NewTask = () => {
     return (
       <View className='flex-1 p-5'>
-        <FlatList
-          data={tasks}
-          renderItem={({ item }) => (
-            <SingleTask navigation={navigation} item={item} />
-          )}
-        />
+        {category?.tasks?.length < 1 ? (
+          <View className='items-center justify-center flex-1'>
+            <Text className='text-lg text-medium text-center '>
+              You have not created a task for this category
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            data={unCompletedTasks}
+            renderItem={({ item }) => (
+              <SingleTask
+                getCategory={getCategory}
+                navigation={navigation}
+                item={item}
+              />
+            )}
+          />
+        )}
       </View>
     );
   };
+
+  if (isLoading) {
+    return (
+      <View className='items-center bg-black flex-1 justify-center'>
+        <ActivityIndicator size={20} />
+      </View>
+    );
+  }
+
   return (
     <View className='flex-1'>
       <View className='p-4 pt-16 bg-[#424874]'>
@@ -63,17 +117,21 @@ const Category = ({ navigation }) => {
             <Ionicons name='arrow-back' size={20} color='white' />
           </TouchableOpacity>
           <View>
-            <Text className='text-3xl font-bold text-white'>General</Text>
+            <Text className='text-3xl font-bold text-white'>
+              {category?.title}
+            </Text>
           </View>
         </View>
         <View className='flex-row items-center justify-between mb-2 mt-4'>
           <Text className='text-white'>Your Progress</Text>
-          <Text className='text-white'>3/7 tasks</Text>
+          <Text className='text-white'>
+            {completedTasks?.length}/{category?.tasks?.length} tasks
+          </Text>
         </View>
         <ProgressBar
           progress={0.5}
           borderWidth={1}
-          fillColor='#FF916A'
+          fillColor={category?.color}
           unfilledColor='gray'
           height={10}
           borderColor='#4C2C8E'
@@ -88,7 +146,7 @@ const Category = ({ navigation }) => {
       <View className='p-5'>
         <TouchableOpacity
           className='bg-[#424874] p-4 rounded-md mb-5 items-center flex-row justify-center'
-          onPress={() => navigation.navigate("New Task")}
+          onPress={() => navigation.navigate("New Task", { category })}
         >
           <Ionicons name='add' size={24} color='white' />
           <Text className='text-white font-bold text-center'>

@@ -8,7 +8,7 @@ import {
   Platform,
   KeyboardAvoidingView,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView, TextInput } from "react-native-gesture-handler";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -18,20 +18,42 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Login = ({ navigation }) => {
   const [isPasswordSecure, setIsPasswordSecure] = useState(true);
-  const [userDetails, setUserDetails] = useState(null);
+  const [userDetails, setUserDetails] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    const getToken = async () => {
+      try {
+        const value = await AsyncStorage.getItem("token");
+        // console.log({ value });
+        if (value !== null) {
+          navigation.navigate("Home Screen");
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    getToken();
+  });
+
   const loginHandler = async () => {
-    setIsLoading(true);
     const url = `${baseURL}/user/login`;
-    try {
-      const res = await axios.post(url, userDetails);
-      await AsyncStorage.setItem("token", res.data.token);
-      navigation.navigate("Home Screen");
-      setIsLoading(false);
-    } catch (error) {
-      Alert.alert(error.response.data.msg);
-      setIsLoading(false);
+    const { email, password } = userDetails;
+    if (!email || email.length < 1) {
+      Alert.alert("Error!", "email field is required");
+    } else if (!password || password.length < 1) {
+      Alert.alert("Error!", "Password field is required");
+    } else {
+      setIsLoading(true);
+      try {
+        const res = await axios.post(url, userDetails);
+        await AsyncStorage.setItem("token", res.data.token);
+        navigation.navigate("Home Screen");
+        setIsLoading(false);
+      } catch (error) {
+        Alert.alert("Ooops!", error.response.data.msg);
+        setIsLoading(false);
+      }
     }
   };
   const keyboardVerticalOffset = Platform.OS === "ios" ? 50 : -200;

@@ -26,3 +26,4 @@ export default function App() {
 }
 
 AppRegistry.registerComponent(appName, () => App);
+// eas build --profile preview --platform android

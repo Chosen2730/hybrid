@@ -1,58 +1,147 @@
-import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
-import { FlatList } from "react-native-gesture-handler";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
+
+import { FlatList, Swipeable } from "react-native-gesture-handler";
 import CircularProgress from "react-native-circular-progress-indicator";
 import { Ionicons } from "@expo/vector-icons";
+import { baseURL, config } from "../../utils/constants";
+import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
+import { AntDesign } from "@expo/vector-icons";
 
-const HomeScreen = ({ navigation }) => {
-  const categories = [
-    { color: "orange", title: "General", tasks: "10", completed: "5" },
-    { color: "blue", title: "Shopping", tasks: "6", completed: "2" },
-    { color: "#D2FF9A", title: "Trips", tasks: "9", completed: "4" },
-  ];
+const HomeScreen = () => {
+  const navigation = useNavigation();
+  const [isLoading, setIsLoading] = useState(false);
+  const [categories, setCategories] = useState([]);
+
+  const renderRightActions = (item) => {
+    return (
+      <TouchableOpacity
+        onPress={() => deleteCategory(item?._id)}
+        className='bg-red-600 mb-4 items-center justify-center px-6 flex-row rounded-r-md'
+      >
+        <Text className='text-white'>Delete</Text>
+        <AntDesign name='delete' size={24} color='white' />
+      </TouchableOpacity>
+    );
+  };
+
+  const deleteCategory = async (id) => {
+    const url = `${baseURL}/category/${id}`;
+    setIsLoading(true);
+    try {
+      await axios.delete(url, await config());
+      getCategories();
+    } catch (error) {
+      console.error(error);
+      setIsLoading(false);
+    }
+  };
+
+  const getCategories = async () => {
+    const url = `${baseURL}/category`;
+    setIsLoading(true);
+    try {
+      const res = await axios.get(url, await config());
+      setIsLoading(false);
+      setCategories(res.data);
+    } catch (error) {
+      console.error(error);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getCategories();
+  }, [navigation]);
+
+  useEffect(() => {
+    const getCat = navigation.addListener("focus", () => {
+      getCategories();
+    });
+    return getCat;
+  }, [navigation]);
+
   return (
     <View className='px-4 flex-1 pt-8 bg-white'>
-      <FlatList
-        data={categories}
-        className='flex-1'
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Category")}
-            style={[
-              {
-                borderColor: item.color,
-              },
-              {
-                shadowColor: "#171717",
-                shadowOffset: { width: -2, height: 4 },
-                shadowOpacity: 0.1,
-                shadowRadius: 3,
-                elevation: 5,
-              },
-            ]}
-            className={`p-6 border-l-4 mb-5 rounded-md bg-gray-50 flex-row items-center justify-between`}
-          >
-            <View>
-              <Text className='text-lg text-gray-700 font-bold'>
-                {item.title}
-              </Text>
-              <Text className='text-gray-400'>
-                {item.completed}/{item.tasks} tasks
-              </Text>
-            </View>
-            <CircularProgress
-              value={(Number(item.completed) / Number(item.tasks)) * 100}
-              inActiveStrokeColor={"gray"}
-              inActiveStrokeOpacity={0.2}
-              progressValueColor={"black"}
-              activeStrokeColor={item.color}
-              radius={40}
-              valueSuffix={"%"}
-            />
-            {/* <Text>Circular bar</Text> */}
-          </TouchableOpacity>
-        )}
-      />
+      {isLoading ? (
+        <ActivityIndicator className='flex-1' />
+      ) : categories.length < 1 ? (
+        <View className='flex-1 items-center justify-center'>
+          <Text className='text-xl font-medium'>No Categories Created</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={categories}
+          className='flex-1'
+          renderItem={({ item }) => {
+            const { tasks } = item;
+            const completed = tasks.filter(
+              (task) => task.isCompleted === true
+            ).length;
+
+            return (
+              <Swipeable
+                overshootRight={true}
+                overshootLeft={false}
+                onSwipeableWillOpen={() => {}}
+                renderRightActions={() => renderRightActions(item)}
+                // renderLeftActions={renderLeftActions}
+              >
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("Category", { item })}
+                  style={[
+                    {
+                      borderColor: item.color,
+                    },
+                    {
+                      shadowColor: "#171717",
+                      shadowOffset: { width: -2, height: 4 },
+                      shadowOpacity: 0.1,
+                      shadowRadius: 3,
+                      elevation: 5,
+                    },
+                  ]}
+                  className={`p-6 border-l-4 mb-5 rounded-md bg-gray-50 flex-row items-center justify-between`}
+                >
+                  <View>
+                    <Text className='text-lg text-gray-700 font-bold'>
+                      {item.title}
+                    </Text>
+                    {tasks.length > 0 ? (
+                      <Text className='text-gray-400'>
+                        {completed}/{tasks.length} tasks completed
+                      </Text>
+                    ) : (
+                      <Text className='text-gray-400'>No task added</Text>
+                    )}
+                  </View>
+                  <CircularProgress
+                    value={
+                      tasks.length > 0 &&
+                      (Number(completed) / Number(tasks.length)) * 100
+                    }
+                    inActiveStrokeColor={"gray"}
+                    inActiveStrokeOpacity={0.2}
+                    progressValueColor={"black"}
+                    activeStrokeColor={item.color}
+                    radius={40}
+                    valueSuffix={"%"}
+                  />
+                  {/* <Text>Circular bar</Text> */}
+                </TouchableOpacity>
+              </Swipeable>
+            );
+          }}
+        />
+      )}
+
       <TouchableOpacity
         className='bg-[#424874] p-4 rounded-md my-10 items-center flex-row justify-center'
         onPress={() => navigation.navigate("New Category")}

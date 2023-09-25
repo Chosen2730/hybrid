@@ -3,8 +3,7 @@ import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 
-export const DateTimePickIOS = ({ mode }) => {
-  const [date, setDate] = useState(new Date(1598051730000));
+export const DateTimePickIOS = ({ mode, date, setDate }) => {
   const [show, setShow] = useState(false);
   const [disDate, setDisdate] = useState("");
 
@@ -16,9 +15,9 @@ export const DateTimePickIOS = ({ mode }) => {
 
   useEffect(() => {
     if (mode === "date") {
-      setDisdate(date.toLocaleDateString());
+      setDisdate(date?.toLocaleDateString());
     } else {
-      setDisdate(date.toLocaleTimeString());
+      setDisdate(date?.toLocaleTimeString());
     }
   }, [show, date]);
 
