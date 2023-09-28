@@ -11,7 +11,6 @@ import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView, TextInput } from "react-native-gesture-handler";
-import SelectDropdown from "react-native-select-dropdown";
 import { DateTimePick } from "../../utils/datePickAndroid";
 import { DateTimePickIOS } from "../../utils/datePickerIOS";
 import { baseURL, config } from "../../utils/constants";
@@ -19,14 +18,17 @@ import axios from "axios";
 import { useGlobalContext } from "../../context";
 
 const NewTask = ({ route, navigation }) => {
-  const { isLoading, setIsLoading, getCategory, getCategories } =
-    useGlobalContext();
+  const {
+    isLoading,
+    setIsLoading,
+    getCategory,
+    getCategories,
+    keyboardVerticalOffset,
+  } = useGlobalContext();
   const [taskInputs, setTaskInputs] = useState({});
   const [date, setDate] = useState(new Date());
-  const [time, setTime] = useState(new Date());
 
   const { category } = route.params;
-  const keyboardVerticalOffset = Platform.OS === "ios" ? 20 : 0;
 
   const createTask = async () => {
     const url = `${baseURL}/task`;
@@ -38,7 +40,7 @@ const NewTask = ({ route, navigation }) => {
       try {
         await axios.post(
           url,
-          { title, description, date, time, categoryID: category?._id },
+          { title, description, date, time: date, categoryID: category?._id },
           await config()
         );
         setIsLoading(false);
@@ -67,75 +69,79 @@ const NewTask = ({ route, navigation }) => {
 
   return (
     <SafeAreaView className='p-4 flex-1'>
-      <KeyboardAvoidingView
-        behavior='position'
-        keyboardVerticalOffset={keyboardVerticalOffset}
-      >
-        <View className=''>
-          <View className='flex-row items-center gap-3'>
-            <TouchableOpacity
-              onPress={() => navigation.pop()}
-              className='bg-black rounded-full p-2 w-10 h-10 items-center justify-center'
-            >
-              <Ionicons name='arrow-back' size={20} color='white' />
-            </TouchableOpacity>
-            <Text className='text-2xl font-bold'>New Task</Text>
-          </View>
-          <TextInput
-            className='bg-gray-200 p-4 rounded-md text-gray-900 my-10'
-            placeholder='Write a new task'
-            val={taskInputs?.title || ""}
-            onChangeText={(val) => setTaskInputs({ ...taskInputs, title: val })}
-          />
-          <View className='bg-gray-200 p-4'>
-            <View className='justify-between flex-row items-center'>
-              <Text>Category</Text>
-              <Text className='bg-gray-100 p-3 rounded-md w-[100px]'>
-                {category?.title}
-              </Text>
-            </View>
-            <View className='justify-between flex-row items-center my-4'>
-              <Text>Select Date</Text>
-              {Platform.OS === "android" ? (
-                <DateTimePick date={date} setDate={setDate} mode='date' />
-              ) : (
-                <DateTimePickIOS date={date} setDate={setDate} mode='date' />
-              )}
-            </View>
-            <View className='justify-between flex-row items-center'>
-              <Text>Select Time</Text>
-              {Platform.OS === "android" ? (
-                <DateTimePick date={time} setDate={setTime} mode='time' />
-              ) : (
-                <DateTimePickIOS date={time} setDate={setTime} mode='time' />
-              )}
-            </View>
-          </View>
-          <Text className='my-5'>Optional Description</Text>
-          <TextInput
-            multiline={true}
-            numberOfLines={10}
-            placeholder='write a note'
-            className='bg-gray-200 h-32 rounded-md p-4'
-            val={taskInputs?.description || ""}
-            onChangeText={(val) =>
-              setTaskInputs({ ...taskInputs, description: val })
-            }
-          />
-        </View>
-
-        <TouchableOpacity
-          className='bg-[#424874] p-4 rounded-md my-5 items-center flex-row justify-center'
-          onPress={createTask}
-          disabled={isLoading}
+      <ScrollView>
+        <KeyboardAvoidingView
+          behavior='position'
+          keyboardVerticalOffset={keyboardVerticalOffset}
         >
-          {isLoading ? (
-            <ActivityIndicator />
-          ) : (
-            <Text className='text-white font-bold text-center'>Add Task</Text>
-          )}
-        </TouchableOpacity>
-      </KeyboardAvoidingView>
+          <View className=''>
+            <View className='flex-row items-center gap-3'>
+              <TouchableOpacity
+                onPress={() => navigation.pop()}
+                className='bg-black rounded-full p-2 w-10 h-10 items-center justify-center'
+              >
+                <Ionicons name='arrow-back' size={20} color='white' />
+              </TouchableOpacity>
+              <Text className='text-2xl font-bold'>New Task</Text>
+            </View>
+            <TextInput
+              className='bg-gray-200 p-4 rounded-md text-gray-900 my-10'
+              placeholder='Write a new task'
+              val={taskInputs?.title || ""}
+              onChangeText={(val) =>
+                setTaskInputs({ ...taskInputs, title: val })
+              }
+            />
+            <View className='bg-gray-200 p-4'>
+              <View className='justify-between flex-row items-center'>
+                <Text>Category</Text>
+                <Text className='bg-gray-100 p-3 rounded-md w-[100px]'>
+                  {category?.title}
+                </Text>
+              </View>
+              <View className='justify-between flex-row items-center my-4'>
+                <Text>Select Date</Text>
+                {Platform.OS === "android" ? (
+                  <DateTimePick date={date} setDate={setDate} mode='date' />
+                ) : (
+                  <DateTimePickIOS date={date} setDate={setDate} mode='date' />
+                )}
+              </View>
+              <View className='justify-between flex-row items-center'>
+                <Text>Select Time</Text>
+                {Platform.OS === "android" ? (
+                  <DateTimePick date={date} setDate={setDate} mode='time' />
+                ) : (
+                  <DateTimePickIOS date={date} setDate={setDate} mode='time' />
+                )}
+              </View>
+            </View>
+            <Text className='my-5'>Optional Description</Text>
+            <TextInput
+              multiline={true}
+              numberOfLines={10}
+              placeholder='write a note'
+              className='bg-gray-200 h-32 rounded-md p-4'
+              val={taskInputs?.description || ""}
+              onChangeText={(val) =>
+                setTaskInputs({ ...taskInputs, description: val })
+              }
+            />
+          </View>
+
+          <TouchableOpacity
+            className='bg-[#424874] p-4 rounded-md my-5 items-center flex-row justify-center'
+            onPress={createTask}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator />
+            ) : (
+              <Text className='text-white font-bold text-center'>Add Task</Text>
+            )}
+          </TouchableOpacity>
+        </KeyboardAvoidingView>
+      </ScrollView>
     </SafeAreaView>
   );
 };

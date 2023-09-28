@@ -1,9 +1,16 @@
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, Image, TouchableOpacity, Platform } from "react-native";
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { useGlobalContext } from "../context";
 const HomeHeader = ({ title, navigation }) => {
+  const paddingTop = Platform.OS === "ios" ? 50 : 20;
+  const { user } = useGlobalContext();
+  const img = user?.profileImage;
   return (
-    <View className='flex-row justify-between items-center p-4 pt-8'>
+    <View
+      style={{ paddingTop }}
+      className='flex-row justify-between items-center p-4'
+    >
       <TouchableOpacity
         onPress={() => navigation.openDrawer()}
         className='flex-1'
@@ -16,7 +23,8 @@ const HomeHeader = ({ title, navigation }) => {
       <View className='flex-1 flex-row justify-end'>
         <Image
           className='w-10 h-10 rounded-full'
-          source={require("../assets/images/user.png")}
+          resizeMode='cover'
+          source={img ? { uri: img } : require("../assets/images/user1.png")}
         />
       </View>
     </View>

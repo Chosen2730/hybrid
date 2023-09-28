@@ -63,9 +63,6 @@ const Category = ({ route, navigation }) => {
         {unCompletedTasks?.length < 1 ? (
           <View className='items-center justify-center flex-1'>
             <Image source={require("../../assets/images/notask.png")} />
-            {/* <Text className='text-base text-medium text-center '>
-              You do not have any uncompleted task
-            </Text> */}
           </View>
         ) : (
           <FlatList
@@ -81,7 +78,7 @@ const Category = ({ route, navigation }) => {
 
   if (isLoading) {
     return (
-      <View className='items-center bg-black flex-1 justify-center'>
+      <View className='items-center bg-gray-700 flex-1 justify-center'>
         <ActivityIndicator size={20} />
       </View>
     );

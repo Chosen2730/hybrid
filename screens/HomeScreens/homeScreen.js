@@ -16,8 +16,20 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
 import { useGlobalContext } from "../../context";
+// import * as Notifications from "expo-notifications";
 
 const HomeScreen = () => {
+  // const getPermissions = async () => {
+  //   const { status } = await Notifications.requestPermissionsAsync();
+  //   if (status !== "granted") {
+  //     alert("You need to enable permissions in order to receive notifications");
+  //     return;
+  //   }
+  // };
+  // useEffect(() => {
+  //   getPermissions();
+  // }, []);
+
   const navigation = useNavigation();
   const { getCategories, isLoading, setIsLoading, categories } =
     useGlobalContext();

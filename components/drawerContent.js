@@ -1,5 +1,5 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   DrawerContentScrollView,
   DrawerItemList,
@@ -7,9 +7,10 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useGlobalContext } from "../context";
 
 const DrawerContent = (props) => {
-  const [user, setUser] = useState({});
+  const { user, getUserProfile } = useGlobalContext();
   const navigation = useNavigation();
   const logoutHandler = async () => {
     try {
@@ -20,19 +21,10 @@ const DrawerContent = (props) => {
     }
   };
 
-  getMyObject = async () => {
-    try {
-      const jsonValue = await AsyncStorage.getItem("user");
-      const currentUser = jsonValue != null ? JSON.parse(jsonValue) : null;
-      setUser(currentUser);
-    } catch (e) {
-      // read error
-    }
-  };
-
   useEffect(() => {
-    getMyObject();
+    getUserProfile();
   }, []);
+  const img = user?.profileImage;
   return (
     <DrawerContentScrollView
       contentContainerStyle={{ backgroundColor: "#F4EEFF", flex: 1 }}
@@ -40,9 +32,15 @@ const DrawerContent = (props) => {
     >
       <View className='flex-1'>
         <View className='items-center mb-10'>
-          <Image
+          {/* <Image
             className='w-40 h-40 rounded-full object-cover mb-2'
             source={require("../assets/images/user.png")}
+          /> */}
+          <Image
+            className='w-40 h-40 rounded-full'
+            resizeMode='cover'
+            source={img ? { uri: img } : require("../assets/images/user1.png")}
+            style={{ width: 200, height: 200 }}
           />
           <Text className='font-bold text-lg'>{user?.fullName}</Text>
           <Text className='font-medium'>{user?.email}</Text>

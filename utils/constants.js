@@ -21,6 +21,7 @@ export const config = async () => {
   return {
     headers: {
       Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
     },
   };
 };

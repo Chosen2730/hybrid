@@ -16,16 +16,38 @@ import { useGlobalContext } from "../context";
 const SingleTask = ({ item, navigation }) => {
   const { isLoading, setIsLoading, getCategory, getCategories, completeTask } =
     useGlobalContext();
+  const [alertShown, setAlertShown] = useState(false);
+
   const [isSelected, setSelection] = useState(false);
   const today = dateFormat(item.date, "mmmm dS, yyyy");
   const time = dateFormat(item.time, "UTC:h:MM TT");
+  const futureTime = new Date(item.date).getTime();
+
+  // useEffect(() => {
+  //   const oneHour = 60 * 60 * 1000; // One hour in milliseconds
+  //   const dueTime = new Date(futureTime).getTime();
+  //   const alertTime = dueTime - oneHour;
+  //   const checkTime = () => {
+  //     const now = Date.now();
+  //     console.log(alertTime, now);
+  //     if (now >= alertTime && !alertShown) {
+  //       setAlertShown(true);
+  //       alert("You have one hour left");
+  //     }
+  //   };
+
+  //   const interval = setInterval(checkTime, 1000); // Check every second
+
+  //   return () => {
+  //     clearInterval(interval);
+  //   };
+  // }, [futureTime, alertShown]);
 
   useEffect(() => {
     if (isSelected) {
       showAlert();
     }
   }, [isSelected]);
-
   const showAlert = () => {
     Alert.alert(
       "Complete Task",

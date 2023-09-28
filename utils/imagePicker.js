@@ -9,20 +9,19 @@ import {
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 
-export const ImageSelector = () => {
-  const [image, setImage] = useState(null);
-
+export const ImageSelector = ({ img, image, setImage }) => {
+  // const [dispImage, setDispImage] = useState("");
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      setImage(result.assets[0]);
     }
   };
 
@@ -33,13 +32,14 @@ export const ImageSelector = () => {
           <Image
             className='w-52 h-52 rounded-full'
             resizeMode='cover'
-            source={require("../assets/images/user1.png")}
+            source={img ? { uri: img } : require("../assets/images/user1.png")}
+            style={{ width: 200, height: 200 }}
           />
         )}
         {image && (
           <Image
             className='w-52 h-52 rounded-full'
-            source={{ uri: image }}
+            source={{ uri: image.uri }}
             style={{ width: 200, height: 200 }}
           />
         )}

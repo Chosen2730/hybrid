@@ -1,13 +1,16 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { baseURL, config } from "./utils/constants";
 import axios from "axios";
 import { Alert } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const AppContext = createContext();
 
 const AppProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState({});
+  const [user, setUser] = useState({});
+  const keyboardVerticalOffset = Platform.OS === "ios" ? 50 : -200;
 
   const getCategories = async () => {
     const url = `${baseURL}/category`;
@@ -57,6 +60,65 @@ const AppProvider = ({ children }) => {
     (task) => task.isCompleted !== true
   );
 
+  const getUser = async () => {
+    try {
+      const currentUser = await AsyncStorage.getItem("user");
+      if (currentUser !== null) {
+        return JSON.parse(currentUser);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const getUserProfile = async () => {
+    let currentUser = await getUser();
+    const id = currentUser.user_id;
+    const url = `${baseURL}/user/${id}`;
+    setIsLoading(true);
+    try {
+      const res = await axios.get(url, await config());
+      setIsLoading(false);
+      const jsonValue = JSON.stringify(res.data);
+      await AsyncStorage.removeItem("user");
+      await AsyncStorage.setItem("user", jsonValue);
+      currentUser = await getUser();
+      setUser(currentUser);
+    } catch (error) {
+      console.error(error);
+      setIsLoading(false);
+    }
+  };
+
+  const editProfileDetails = async (data) => {
+    setIsLoading(true);
+    const userInputs = data.userInputs || {};
+    const id = userInputs.user_id;
+    const url = `${baseURL}/user/${id}`;
+    const { fullName, tel, backupEmail } = userInputs;
+    let formInput = new FormData();
+    formInput.append("fullName", fullName);
+    formInput.append("tel", tel);
+    // formInput.append("backupEmail", backupEmail);
+    if (data.image) {
+      formInput.append("image", {
+        uri: data.image.uri,
+        type: "image/jpeg",
+        name: "profile-img",
+      });
+    }
+    try {
+      const res = await axios.patch(url, formInput, await config());
+      setIsLoading(false);
+      Alert.alert(res.data.msg);
+      getUserProfile();
+    } catch (error) {
+      Alert.alert(error.response.data.msg);
+      console.log(error);
+      setIsLoading(false);
+    }
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -69,6 +131,10 @@ const AppProvider = ({ children }) => {
         completeTask,
         completedTasks,
         unCompletedTasks,
+        getUserProfile,
+        user,
+        editProfileDetails,
+        keyboardVerticalOffset,
       }}
     >
       {children}

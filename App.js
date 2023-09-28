@@ -5,10 +5,11 @@ import AppStack from "./navigations";
 import "react-native-gesture-handler";
 import { AppRegistry } from "react-native";
 import { name as appName } from "./app.json";
-import { useEffect } from "react";
 import { AppProvider } from "./context";
+import registerNNPushToken from "native-notify";
 
 export default function App() {
+  registerNNPushToken(12574, "wcaiW4dfXizu4qpPcROGku");
   const MyTheme = {
     ...DefaultTheme,
     colors: {

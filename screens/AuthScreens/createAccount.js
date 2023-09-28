@@ -8,19 +8,22 @@ import {
   Alert,
   Platform,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView, TextInput } from "react-native-gesture-handler";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { baseURL } from "../../utils/constants";
 import axios from "axios";
+import { useGlobalContext } from "../../context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CreateAccount = () => {
   const navigation = useNavigation();
   const [isPasswordSecure, setIsPasswordSecure] = useState(true);
   const [userDetails, setUserDetails] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const { keyboardVerticalOffset } = useGlobalContext();
 
   const signUpHandler = async () => {
     const url = `${baseURL}/user/signup`;
@@ -54,7 +57,21 @@ const CreateAccount = () => {
     }
   };
 
-  const keyboardVerticalOffset = Platform.OS === "ios" ? 50 : -200;
+  useEffect(() => {
+    const getToken = async () => {
+      try {
+        const value = await AsyncStorage.getItem("token");
+
+        if (value !== null) {
+          navigation.navigate("Home Screen");
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    getToken();
+  }, []);
 
   return (
     <SafeAreaView>

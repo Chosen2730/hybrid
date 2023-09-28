@@ -15,27 +15,13 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import axios from "axios";
 import { baseURL } from "../../utils/constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useGlobalContext } from "../../context";
 
 const Login = ({ navigation }) => {
   const [isPasswordSecure, setIsPasswordSecure] = useState(true);
   const [userDetails, setUserDetails] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    const getToken = async () => {
-      try {
-        const value = await AsyncStorage.getItem("token");
-
-        if (value !== null) {
-          navigation.navigate("Home Screen");
-        }
-      } catch (e) {
-        console.log(e);
-      }
-    };
-
-    getToken();
-  }, []);
+  const { keyboardVerticalOffset } = useGlobalContext();
 
   const loginHandler = async () => {
     const url = `${baseURL}/user/login`;
@@ -60,7 +46,6 @@ const Login = ({ navigation }) => {
       }
     }
   };
-  const keyboardVerticalOffset = Platform.OS === "ios" ? 50 : -200;
 
   return (
     <SafeAreaView>
