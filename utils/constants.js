@@ -6,7 +6,6 @@ export const baseURL = "https://hybrid-backend.vercel.app/api/v1";
 const getToken = async () => {
   try {
     const value = await AsyncStorage.getItem("token");
-    // console.log({ value });
     if (value !== null) {
       return value;
     }
@@ -17,7 +16,6 @@ const getToken = async () => {
 
 export const config = async () => {
   const token = await getToken();
-  // console.log({ token });
   return {
     headers: {
       Authorization: `Bearer ${token}`,

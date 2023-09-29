@@ -79,11 +79,11 @@ const AppProvider = ({ children }) => {
     try {
       const res = await axios.get(url, await config());
       setIsLoading(false);
-      const jsonValue = JSON.stringify(res.data);
-      await AsyncStorage.removeItem("user");
-      await AsyncStorage.setItem("user", jsonValue);
-      currentUser = await getUser();
-      setUser(currentUser);
+      // const jsonValue = JSON.stringify(res.data);
+      // await AsyncStorage.removeItem("user");
+      // await AsyncStorage.setItem("user", jsonValue);
+      // currentUser = await getUser();
+      setUser(res.data);
     } catch (error) {
       console.error(error);
       setIsLoading(false);
@@ -99,7 +99,10 @@ const AppProvider = ({ children }) => {
     let formInput = new FormData();
     formInput.append("fullName", fullName);
     formInput.append("tel", tel);
-    formInput.append("backupEmail", backupEmail);
+
+    if (backupEmail !== undefined) {
+      formInput.append("backupEmail", backupEmail);
+    }
     if (data.image) {
       formInput.append("image", {
         uri: data.image.uri,
@@ -109,12 +112,12 @@ const AppProvider = ({ children }) => {
     }
     try {
       const res = await axios.patch(url, formInput, await config());
-      setIsLoading(false);
-      // console.log(res.data.updatedUser)
-      Alert.alert(res.data.msg);
       getUserProfile();
+      Alert.alert(res.data.msg);
     } catch (error) {
-      Alert.alert(error.response?.data?.msg);
+      Alert.alert(
+        error.response?.data?.msg || "An error occured, try again later"
+      );
       console.log(error);
       setIsLoading(false);
     }

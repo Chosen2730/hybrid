@@ -45,7 +45,7 @@ const SidebarStack = () => {
           ),
         }}
       />
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name='Help Center'
         options={{
           drawerIcon: ({ color }) => (
@@ -71,7 +71,7 @@ const SidebarStack = () => {
           ),
         }}
         component={Rate}
-      />
+      /> */}
     </Drawer.Navigator>
   );
 };

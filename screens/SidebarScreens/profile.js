@@ -19,7 +19,7 @@ const Profile = () => {
 
   useEffect(() => {
     setUserInputs({ ...userInputs, ...user });
-  }, []);
+  }, [isLoading, user]);
 
   const profileData = { userInputs, image };
 
