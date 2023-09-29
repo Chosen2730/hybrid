@@ -99,7 +99,7 @@ const AppProvider = ({ children }) => {
     let formInput = new FormData();
     formInput.append("fullName", fullName);
     formInput.append("tel", tel);
-    // formInput.append("backupEmail", backupEmail);
+    formInput.append("backupEmail", backupEmail);
     if (data.image) {
       formInput.append("image", {
         uri: data.image.uri,
@@ -110,10 +110,11 @@ const AppProvider = ({ children }) => {
     try {
       const res = await axios.patch(url, formInput, await config());
       setIsLoading(false);
+      // console.log(res.data.updatedUser)
       Alert.alert(res.data.msg);
       getUserProfile();
     } catch (error) {
-      Alert.alert(error.response.data.msg);
+      Alert.alert(error.response?.data?.msg);
       console.log(error);
       setIsLoading(false);
     }

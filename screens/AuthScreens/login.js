@@ -41,7 +41,11 @@ const Login = ({ navigation }) => {
         setIsLoading(false);
         setUserDetails({});
       } catch (error) {
-        Alert.alert("Ooops!", error.response.data.msg);
+        Alert.alert(
+          "Ooops!",
+          error.response?.data?.msg ||
+            "An error occured, check your internet connection and try again"
+        );
         setIsLoading(false);
       }
     }
