@@ -78,8 +78,8 @@ const Category = ({ route, navigation }) => {
 
   if (isLoading) {
     return (
-      <View className='items-center bg-gray-700 flex-1 justify-center'>
-        <ActivityIndicator size={20} />
+      <View className='items-center bg-gray-200 flex-1 justify-center'>
+        <ActivityIndicator size={40} />
       </View>
     );
   }

@@ -27,7 +27,7 @@ const DrawerContent = (props) => {
   const img = user?.profileImage;
   return (
     <DrawerContentScrollView
-      contentContainerStyle={{ backgroundColor: "#F4EEFF", flex: 1 }}
+      contentContainerStyle={{ backgroundColor: "rgb(243 244 246)", flex: 1 }}
       {...props}
     >
       <View className='flex-1'>
@@ -37,7 +37,7 @@ const DrawerContent = (props) => {
             source={require("../assets/images/user.png")}
           /> */}
           <Image
-            className='w-40 h-40 rounded-full'
+            className='w-40 h-40 rounded-full bg-gray-100'
             resizeMode='cover'
             source={img ? { uri: img } : require("../assets/images/user1.png")}
             style={{ width: 200, height: 200 }}
